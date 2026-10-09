@@ -7,7 +7,7 @@
 **AI webpage translation you actually control — bring your own key, read anything, in your own words.**
 
 [![License](https://img.shields.io/badge/License-GPLv3-4c8eda?style=flat-square)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-0.7.1-f0883e?style=flat-square)](https://github.com/ZhishengZZ/yeyi-translator/releases)
+[![Release](https://img.shields.io/badge/release-0.7.2-f0883e?style=flat-square)](https://github.com/ZhishengZZ/yeyi-translator/releases)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-3fb950?style=flat-square)](#-install)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8957e5?style=flat-square)](#)
 
@@ -101,4 +101,4 @@ Big thanks to **[@mengxi-ream](https://github.com/mengxi-ream)** and the Read Fr
 
 ## 🧪 Status
 
-**0.7.1** - brings select-to-translate, AI page summary and Streaming Follow-Translate out of Labs as official features. Streaming Follow-Translate (off by default) keeps translating new content as you scroll infinite-feed sites like X/Twitter, with no re-clicking needed, idles down to save quota when scrolling stops, and ships with a built-in site rule for X (x.com). Existing page translation, new tab, AI summary, select-to-translate, context refinement and bilingual mode are unchanged. Still pre-1.0; issues and PRs are welcome.
+**0.7.2** - the floating ball can be dragged anywhere on the page. The position is remembered across pages, and a drag does not trigger translate or restore. The menu opens below the ball near the top of the viewport, and to the right when the ball sits on the left. Provider presets now use DeepSeek V4.1 Flash (`deepseek-flash`) and add Qwen3.8 Max / Flash. Saved model settings are left as they are. Still pre-1.0; issues and PRs are welcome.
