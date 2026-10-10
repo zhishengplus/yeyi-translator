@@ -7,7 +7,7 @@
 **网页翻译，交给你自己的模型 —— 自带 Key、原地读全文、还讲究信达雅。**
 
 [![License](https://img.shields.io/badge/许可证-GPLv3-4c8eda?style=flat-square)](./LICENSE)
-[![Release](https://img.shields.io/badge/版本-0.7.2-f0883e?style=flat-square)](https://github.com/ZhishengZZ/yeyi-translator/releases)
+[![Release](https://img.shields.io/badge/版本-0.7.2-f0883e?style=flat-square)](https://github.com/zhishengplus/yeyi-translator/releases)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-3fb950?style=flat-square)](#-安装)
 [![Dependencies](https://img.shields.io/badge/依赖-零-8957e5?style=flat-square)](#)
 
@@ -51,7 +51,7 @@ AI 网页总结会提取当前页面正文，生成概览、核心要点和关�
 
 > 暂无商店版，用「加载已解压的扩展程序」装。
 
-1. 下载 [最新 Release 压缩包](https://github.com/ZhishengZZ/yeyi-translator/releases)（或克隆本仓库）。
+1. 下载 [最新 Release 压缩包](https://github.com/zhishengplus/yeyi-translator/releases)（或克隆本仓库）。
 2. 打开 `chrome://extensions/`，右上角开启**开发者模式**。
 3. 点**加载已解压的扩展程序**，选中**直接含 `manifest.json` 的那层文件夹**。
 

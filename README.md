@@ -7,7 +7,7 @@
 **AI webpage translation you actually control — bring your own key, read anything, in your own words.**
 
 [![License](https://img.shields.io/badge/License-GPLv3-4c8eda?style=flat-square)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-0.7.2-f0883e?style=flat-square)](https://github.com/ZhishengZZ/yeyi-translator/releases)
+[![Release](https://img.shields.io/badge/release-0.7.2-f0883e?style=flat-square)](https://github.com/zhishengplus/yeyi-translator/releases)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-3fb950?style=flat-square)](#-install)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8957e5?style=flat-square)](#)
 
@@ -51,7 +51,7 @@ It lives in `chrome.storage.local`, is never injected into the page, and never s
 
 > Load it unpacked — no Web Store build yet.
 
-1. Grab the [latest release zip](https://github.com/ZhishengZZ/yeyi-translator/releases) (or clone this repo).
+1. Grab the [latest release zip](https://github.com/zhishengplus/yeyi-translator/releases) (or clone this repo).
 2. Open `chrome://extensions/` and switch on **Developer mode** (top-right).
 3. Click **Load unpacked** and choose the folder that directly contains **`manifest.json`**.
 
