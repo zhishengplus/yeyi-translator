@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>悬浮球拖动</title>
+  <link rel="stylesheet" href="../src/content.css" />
+</head>
+<body>
+  <p id="story">按住右下角的「译」可以拖动。点一下会计数，拖动不会计数。</p>
+  <p id="clicks">点击次数：0</p>
+  <script>
+    const saved = JSON.parse(sessionStorage.getItem("yeyi-fixture") || "{}");
+    function persistSaved() {
+      sessionStorage.setItem("yeyi-fixture", JSON.stringify(saved));
+    }
+    globalThis.chrome = {
+      runtime: {
+        onMessage: { addListener() {} },
+        getManifest() { return { version: "0.7.2" }; },
+        sendMessage() { return Promise.resolve({ ok: false, error: "fixture" }); }
+      },
+      storage: {
+        local: {
+          get(key) {
+            const name = typeof key === "string" ? key : Object.keys(key || {})[0];
+            return Promise.resolve(saved[name] ? { [name]: saved[name] } : {});
+          },
+          set(items) {
+            Object.assign(saved, items);
+            persistSaved();
+            globalThis.__ballSaved = saved["yeyi.ballPosition"] || null;
+            return Promise.resolve();
+          }
+        },
+        onChanged: { addListener() {} }
+      }
+    };
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".yeyi-floating-ball")) return;
+      globalThis.__ballClicks = (globalThis.__ballClicks || 0) + 1;
+      document.querySelector("#clicks").textContent = `点击次数：${globalThis.__ballClicks}`;
+    });
+  </script>
+  <script src="../src/ball-drag.js"></script>
+  <script src="../src/content.js"></script>
+</body>
+</html>

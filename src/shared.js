@@ -73,10 +73,10 @@ export const SITE_HOST_PRESETS = {
 export const PROVIDER_PRESETS = [
   {
     id: "deepseek-flash",
-    label: "DeepSeek V4 Flash",
+    label: "DeepSeek V4.1 Flash",
     providerName: "DeepSeek",
     baseUrl: "https://api.deepseek.com",
-    model: "deepseek-v4-flash",
+    model: "deepseek-flash",
     maxTokens: 8000,
     temperature: 0.2,
     requestTimeoutMs: 30000,
@@ -91,6 +91,28 @@ export const PROVIDER_PRESETS = [
     maxTokens: 8000,
     temperature: 0.2,
     requestTimeoutMs: 45000,
+    thinkingMode: "disabled"
+  },
+  {
+    id: "qwen38-max",
+    label: "Qwen3.8 Max",
+    providerName: "Qwen / 阿里云百炼",
+    baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model: "qwen3.8-max",
+    maxTokens: 8000,
+    temperature: 0.2,
+    requestTimeoutMs: 45000,
+    thinkingMode: "disabled"
+  },
+  {
+    id: "qwen38-flash",
+    label: "Qwen3.8 Flash",
+    providerName: "Qwen / 阿里云百炼",
+    baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    model: "qwen3.8-flash",
+    maxTokens: 8000,
+    temperature: 0.2,
+    requestTimeoutMs: 30000,
     thinkingMode: "disabled"
   },
   {

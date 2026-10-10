@@ -7,7 +7,7 @@
 **网页翻译，交给你自己的模型 —— 自带 Key、原地读全文、还讲究信达雅。**
 
 [![License](https://img.shields.io/badge/许可证-GPLv3-4c8eda?style=flat-square)](./LICENSE)
-[![Release](https://img.shields.io/badge/版本-0.7.1-f0883e?style=flat-square)](https://github.com/ZhishengZZ/yeyi-translator/releases)
+[![Release](https://img.shields.io/badge/版本-0.7.2-f0883e?style=flat-square)](https://github.com/zhishengplus/yeyi-translator/releases)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-3fb950?style=flat-square)](#-安装)
 [![Dependencies](https://img.shields.io/badge/依赖-零-8957e5?style=flat-square)](#)
 
@@ -51,7 +51,7 @@ AI 网页总结会提取当前页面正文，生成概览、核心要点和关�
 
 > 暂无商店版，用「加载已解压的扩展程序」装。
 
-1. 下载 [最新 Release 压缩包](https://github.com/ZhishengZZ/yeyi-translator/releases)（或克隆本仓库）。
+1. 下载 [最新 Release 压缩包](https://github.com/zhishengplus/yeyi-translator/releases)（或克隆本仓库）。
 2. 打开 `chrome://extensions/`，右上角开启**开发者模式**。
 3. 点**加载已解压的扩展程序**，选中**直接含 `manifest.json` 的那层文件夹**。
 
@@ -101,4 +101,4 @@ agent = 智能体
 
 ## 🧪 版本状态
 
-**0.7.1** -- 划词翻译、AI 网页总结与「心动跟译」移出实验室,成为正式功能。「心动跟译」(默认关闭):在 X/微博等无限滚动页面边刷边译,新内容自动跟随、无需反复点击,停滚时自动降速以节省额度,并为 X(x.com)内置站点适配规则;开启时悬浮球变成透明跳动的彩色像素心💗。现有网页翻译、新标签页、AI 总结、划词翻译、上下文精翻与双语模式不变。仍属 1.0 前版本,欢迎提 Issue 和 PR。
+**0.7.2** -- 悬浮球可以按住拖到页面任意位置,松手后记住,换页仍然有效;点一下仍是翻译或恢复原文,拖动不会误触发。靠近顶部时菜单改到球下方,靠左时菜单向右展开。模型预设改为 DeepSeek V4.1 Flash（`deepseek-flash`）,并加入 Qwen3.8 Max / Flash。已经保存的模型配置不会被改写。仍属 1.0 前版本,欢迎提 Issue 和 PR。

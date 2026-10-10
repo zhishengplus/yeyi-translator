@@ -141,13 +141,12 @@ h6 .yeyi-translation {
 
 .yeyi-floating-root {
   position: fixed;
-  /* 默认完整露出、轻贴右边，不再 -20px 推出屏幕只露半个球（避免误点正文/被滚动条挡）。 */
+  /* 默认完整露出、轻贴右边。拖动后改由 left/top 定位,这里的 right/bottom 只作初始位置。 */
   right: 16px;
   bottom: 20px;
+  width: 44px;
+  height: 44px;
   z-index: 2147483647;
-  display: grid;
-  gap: 8px;
-  justify-items: end;
   font-family: Roboto, 'Segoe UI', Arial, 'Microsoft YaHei UI', 'Microsoft YaHei', sans-serif;
   pointer-events: none;
 }
@@ -164,7 +163,9 @@ h6 .yeyi-translation {
   background: #1a73e8;
   color: #ffffff;
   box-shadow: 0 1px 3px rgba(60, 64, 67, 0.15), 0 4px 8px rgba(60, 64, 67, 0.1);
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
   font: 500 17px/1 Roboto, 'Segoe UI', Arial, 'Microsoft YaHei UI', sans-serif;
   pointer-events: auto;
   transition: background 100ms cubic-bezier(0.2, 0, 0, 1), box-shadow 150ms cubic-bezier(0.2, 0, 0, 1);
@@ -173,6 +174,10 @@ h6 .yeyi-translation {
 .yeyi-floating-ball:hover {
   background: #185abc;
   box-shadow: 0 1px 3px rgba(60, 64, 67, 0.2), 0 8px 16px rgba(60, 64, 67, 0.14);
+}
+
+.yeyi-floating-root.is-dragging .yeyi-floating-ball {
+  cursor: grabbing;
 }
 
 .yeyi-ball-ring {
@@ -233,7 +238,9 @@ h6 .yeyi-translation {
 /* ===== 悬浮菜单 ===== */
 
 .yeyi-floating-menu {
-  position: relative;
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
   display: grid;
   gap: 2px;
   width: 160px;
@@ -248,6 +255,16 @@ h6 .yeyi-translation {
   transition: opacity 160ms cubic-bezier(0.05, 0.7, 0.1, 1), transform 160ms cubic-bezier(0.05, 0.7, 0.1, 1);
 }
 
+.yeyi-floating-root[data-side="left"] .yeyi-floating-menu {
+  right: auto;
+  left: 0;
+}
+
+.yeyi-floating-root[data-vside="below"] .yeyi-floating-menu {
+  bottom: auto;
+  top: calc(100% + 8px);
+}
+
 /* 桥接区(CSS-Tricks「forgiving mouse paths」):菜单与悬浮球之间有 8px 间隙,
    鼠标从球移到菜单时若穿过空白会脱离 :hover 导致菜单缩回。用伪元素从菜单底边
    向下延伸补上这段间隙,鼠标经过时仍算在菜单(及 root)hover 范围内。
@@ -258,8 +275,13 @@ h6 .yeyi-translation {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -10px;
-  height: 10px;
+  bottom: -8px;
+  height: 8px;
+}
+
+.yeyi-floating-root[data-vside="below"] .yeyi-floating-menu::after {
+  bottom: auto;
+  top: -8px;
 }
 
 .yeyi-floating-root:hover .yeyi-floating-menu,
@@ -267,6 +289,13 @@ h6 .yeyi-translation {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0) translateY(0);
+}
+
+.yeyi-floating-root.is-dragging .yeyi-floating-menu,
+.yeyi-floating-root.is-dragging:hover .yeyi-floating-menu {
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
 }
 
 .yeyi-floating-menu button {

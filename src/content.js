@@ -54,6 +54,8 @@
   const WRAPPER_CLASS = "yeyi-content-wrapper";
   const NOTRANSLATE_CLASS = "notranslate";
   const WALK_ATTRS = [WALKED_ATTR, PARAGRAPH_ATTR, BLOCK_ATTR, INLINE_ATTR];
+  const BALL_POS_KEY = "yeyi.ballPosition";
+  const BALL_SIZE = 44;
 
   // 搜索框助翻用：识别不可翻译输入框时复用。
   const NON_NEWLINE_WS = /[^\S\n]/;
@@ -96,6 +98,9 @@
     floatingMenu: null,
     floatingRetryBtn: null,
     floatingContextBtn: null,
+    ballPosition: null,
+    ballDrag: null,
+    suppressBallClick: false,
     hiddenForHost: false,
     siteRule: null,                   // 当前 URL 生效的站点规则(合并后),startTranslation 时计算
     nextUnitId: 1,
@@ -152,7 +157,15 @@
       state.summaryEnabled = Boolean(settings.labSummary);
     }
     chrome.storage.onChanged?.addListener((changes, area) => {
-      if (area !== "local" || !changes["yeyi.settings"]) return;
+      if (area !== "local") return;
+      if (changes[BALL_POS_KEY] && !state.ballDrag) {
+        const nextPos = changes[BALL_POS_KEY].newValue;
+        if (nextPos && Number.isFinite(nextPos.left) && Number.isFinite(nextPos.top)) {
+          state.ballPosition = { left: nextPos.left, top: nextPos.top };
+          applyBallPosition();
+        }
+      }
+      if (!changes["yeyi.settings"]) return;
       const next = changes["yeyi.settings"].newValue;
       if (!next) return;
       const prevBall = state.settings?.showFloatingBall;
@@ -178,7 +191,11 @@
       // 双语样式即改即生效:已翻译的译块(含 shadow 内)当场换装,无需重新翻译。
       if (next.bilingualStyle && next.bilingualStyle !== prevStyle) applyBilingualStyleLive(next.bilingualStyle);
     });
+    await loadBallPosition();
     renderFloatingBall();
+    window.addEventListener("resize", () => {
+      if (state.ballPosition) applyBallPosition();
+    });
 
     if (
       settings?.globalTranslateActive ||
@@ -2086,13 +2103,20 @@ h1 .yeyi-translation, h2 .yeyi-translation, h3 .yeyi-translation, h4 .yeyi-trans
     button.title = "雅译：点击翻译当前页面";
     button.setAttribute("aria-label", "雅译：点击翻译当前页面");
     button.innerHTML = '<span class="yeyi-ball-text">译</span><span class="yeyi-ball-ring"></span>';
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
+      if (state.suppressBallClick) {
+        state.suppressBallClick = false;
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       if (state.active) restorePage({ keepFloating: true, disableGlobal: true });
       else startTranslation({}).catch((error) => {
         state.error = error?.message || String(error);
         renderStatus();
       });
     });
+    bindBallDrag(button);
 
     const menu = document.createElement("div");
     menu.className = "yeyi-floating-menu";
@@ -2130,7 +2154,116 @@ h1 .yeyi-translation, h2 .yeyi-translation, h3 .yeyi-translation, h4 .yeyi-trans
     state.floatingContextBtn = menu.querySelector('[data-action="context"]');
     state.floatingSummaryBtn = menu.querySelector('[data-action="summary"]');
     state.floatingStreamingBtn = menu.querySelector('[data-action="streaming"]');
+    applyBallPosition();
     updateFloatingBall();
+  }
+
+  async function loadBallPosition() {
+    try {
+      const stored = await chrome.storage?.local?.get(BALL_POS_KEY);
+      const pos = stored?.[BALL_POS_KEY];
+      if (pos && Number.isFinite(pos.left) && Number.isFinite(pos.top)) {
+        state.ballPosition = { left: pos.left, top: pos.top };
+      }
+    } catch {
+      // 读不到就留在右下角默认位置。
+    }
+  }
+
+  function ballViewport() {
+    return {
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      size: BALL_SIZE,
+      pad: 8,
+      menuHeight: state.floatingMenu?.offsetHeight || 220
+    };
+  }
+
+  function applyBallPosition() {
+    const root = state.floatingRoot;
+    const place = globalThis.YeyiBallDrag?.placeBall;
+    if (!root || !place) return;
+    if (!state.ballPosition) {
+      root.style.left = "";
+      root.style.top = "";
+      root.style.right = "";
+      root.style.bottom = "";
+      const rect = root.getBoundingClientRect();
+      const placed = place({ left: rect.left, top: rect.top }, ballViewport());
+      root.dataset.side = placed.side;
+      root.dataset.vside = placed.vside;
+      return;
+    }
+    const placed = place(state.ballPosition, ballViewport());
+    root.style.right = "auto";
+    root.style.bottom = "auto";
+    root.style.left = `${placed.left}px`;
+    root.style.top = `${placed.top}px`;
+    root.dataset.side = placed.side;
+    root.dataset.vside = placed.vside;
+  }
+
+  function bindBallDrag(button) {
+    const dragExceeded = globalThis.YeyiBallDrag?.dragExceeded;
+    if (!dragExceeded) return;
+    button.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || !state.floatingRoot) return;
+      state.suppressBallClick = false;
+      const rect = state.floatingRoot.getBoundingClientRect();
+      state.ballDrag = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        originLeft: rect.left,
+        originTop: rect.top,
+        moved: false
+      };
+      try {
+        button.setPointerCapture(event.pointerId);
+      } catch {
+        // 捕获失败时仍按 pointer 事件拖,松手落在球外就停。
+      }
+    });
+    button.addEventListener("pointermove", (event) => {
+      const drag = state.ballDrag;
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      if (!drag.moved && !dragExceeded(drag.startX, drag.startY, event.clientX, event.clientY)) return;
+      drag.moved = true;
+      state.floatingRoot.classList.add("is-dragging");
+      state.ballPosition = {
+        left: drag.originLeft + (event.clientX - drag.startX),
+        top: drag.originTop + (event.clientY - drag.startY)
+      };
+      applyBallPosition();
+    });
+    button.addEventListener("pointerup", finishBallDrag);
+    button.addEventListener("pointercancel", finishBallDrag);
+  }
+
+  function finishBallDrag(event) {
+    const drag = state.ballDrag;
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const moved = drag.moved;
+    state.ballDrag = null;
+    state.floatingRoot?.classList.remove("is-dragging");
+    try {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    } catch {
+      // 指针已经释放。
+    }
+    if (!moved) return;
+    state.suppressBallClick = true;
+    const place = globalThis.YeyiBallDrag?.placeBall;
+    if (place) {
+      const placed = place({
+        left: drag.originLeft + (event.clientX - drag.startX),
+        top: drag.originTop + (event.clientY - drag.startY)
+      }, ballViewport());
+      state.ballPosition = { left: placed.left, top: placed.top };
+      applyBallPosition();
+    }
+    chrome.storage?.local?.set({ [BALL_POS_KEY]: state.ballPosition }).catch(() => {});
   }
 
   function removeFloatingBall() {
@@ -2170,8 +2303,10 @@ h1 .yeyi-translation, h2 .yeyi-translation, h3 .yeyi-translation, h4 .yeyi-trans
       ballText.textContent = state.contextRefining ? "精" : state.active ? "原" : "译";
     }
     const title = streaming ? "雅译：心动跟译进行中，点击恢复原文" : state.contextRefining ? "雅译：正在上下文精翻" : state.active ? "雅译：点击恢复原文" : "雅译：点击翻译当前页面";
-    state.floatingButton.title = title;
-    state.floatingButton.setAttribute("aria-label", title);
+    const titled = `${title}（按住可拖动）`;
+    state.floatingButton.title = titled;
+    state.floatingButton.setAttribute("aria-label", titled);
+    applyBallPosition();
   }
 
   async function toggleStreamingMode() {

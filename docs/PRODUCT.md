@@ -27,7 +27,7 @@ The product design and UI are original. The DOM translation engine, however, is 
 - Non-CJK and mixed CN/EN paragraphs are no longer silently discarded; only echo/empty counts as "no translation needed" and is reported separately.
 - Free-tier throughput: fewer, larger batches with an honest "rate-limited, queuing" status instead of pretending completion.
 - Failure visibility: enlarged retry hit-area plus one-click "retry failed segments" from the popup and the floating-ball menu.
-- Floating ball is fully visible at the bottom-right, no longer pushed half off-screen.
+- Floating ball is fully visible at the bottom-right, no longer pushed half off-screen. It can be dragged; the position is remembered across pages.
 - Popup, options, and new tab search use one Chrome Settings-style UI system: matching typography, radius, buttons, cards, and list rows. The new tab page keeps Google search, voice, Lens, topSites tiles, and an optional omnibox-style Chinese-to-English suggestion.
 - Translation style presets are intentionally distinct: `信达雅` remains the default signature mode; `自然中文` prioritizes native Chinese web-reading rhythm; precise, technical, business, and literary modes have separate terminology, tone, and rewriting boundaries.
 - Manual context refinement adds a second-pass path for difficult professional text. It is never auto-enabled; the popup and floating menu trigger a batch that sends page outline, neighboring paragraphs, heading path, and previous translation as calibration context.
